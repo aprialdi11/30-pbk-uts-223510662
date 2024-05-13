@@ -1,12 +1,10 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  background-color: #2d2d84; /* Background color changed to blue */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,11 +13,12 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #73a9ff; /* Blue color */
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 a:hover {
-  color: #535bf2;
+  color: #8db8ff; /* Lighter blue color on hover */
 }
 
 body {
@@ -28,34 +27,46 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: linear-gradient(to bottom, #2d2d84, #42428f); /* Gradient background */
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: #fff;
 }
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: none;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background: linear-gradient(to right, #8c63d9, #5c24a6); /* Gradient background */
+  color: #fff;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
+
 button:hover {
-  border-color: #646cff;
+  background: linear-gradient(to right, #a78af5, #7653e3); /* Gradient background on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.5);
 }
+
+
 
 .card {
   padding: 2em;
+  background-color: #333;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #app {
@@ -75,5 +86,6 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+    color: #333;
   }
 }

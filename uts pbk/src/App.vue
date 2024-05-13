@@ -1,221 +1,157 @@
 <template>
   <div class="container">
-    <h1 class="app-title">Simple Todo App</h1>
-    <div class="todo-input-container">
-      <input 
-        type="text" 
-        v-model="newTodo" 
-        class="todo-input" 
-        @keyup.enter="addTodo" 
-        placeholder="Add new task..."
-      />
-      <button class="todo-button" @click="addTodo">Add</button>
+    <header>
+      <nav>
+        <ul>
+          <li @click="selectedMenu = 'Post'" :class="{ active: selectedMenu === 'Post' }" class="menu-item">Post</li>
+          <li @click="selectedMenu = 'Todos'" :class="{ active: selectedMenu === 'Todos' }" class="menu-item">Todos</li>
+        </ul>
+      </nav>
+    </header>
+    <div class="content">
+      <div v-if="selectedMenu === 'Post'" class="post-section">
+        <select v-model="selectedUser" @change="fetchPosts" class="user-select">
+          <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+        </select>
+        <div v-if="posts.length > 0" class="post-list">
+          <h2>Postingan User: {{ selectedUserName }}</h2>
+          <ul>
+            <li v-for="post in posts" :key="post.id" class="post-item">
+              <h3>{{ post.title }}</h3>
+              <p>{{ post.body }}</p>
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          <p>Loading...</p>
+        </div>
+      </div>
+      <div v-else-if="selectedMenu === 'Todos'" class="todos-section">
+        <Todos :todos="todos" />
+      </div>
     </div>
-
-    <!-- Filter untuk tugas -->
-    <div class="todo-filter">
-      <button @click="setFilter('all')" :class="{ active: filter === 'all' }">All</button>
-      <button @click="setFilter('active')" :class="{ active: filter === 'active' }">Active</button>
-      <button @click="setFilter('completed')" :class="{ active: filter === 'completed' }">Completed</button>
-    </div>
-
-    <!-- Daftar tugas -->
-    <ul class="todo-list">
-      <li 
-        v-for="(todo, index) in filteredTodos" 
-        :key="index" 
-        class="todo-item" 
-      >
-        <!-- Checkbox untuk menandai tugas -->
-        <input 
-          type="checkbox" 
-          v-model="todo.completed" 
-          class="todo-checkbox"
-        />
-        
-        <!-- Teks tugas, dengan efek hover -->
-        <span 
-          :class="{ 'completed': todo.completed }" 
-          class="todo-text" 
-          @dblclick="editTodo(todo)"
-        >
-          {{ todo.text }}
-        </span>
-        
-        <!-- Tombol untuk menghapus tugas dengan efek hover -->
-        <button class="todo-delete" @click="confirmDelete(index)">Delete</button>
-      </li>
-    </ul>
-
-    <!-- Tombol untuk menghapus semua tugas -->
-    <button class="todo-clear" @click="clearTodos">Clear All</button>
   </div>
 </template>
-
 <script>
+import Todos from './Todos.vue'; // Sesuaikan dengan path file komponen Todos Anda
+
 export default {
+  components: {
+    Todos
+  },
   data() {
     return {
-      todos: [],
-      newTodo: '',
-      filter: 'all',
+      selectedMenu: 'Post', // Default menu selection
+      users: [],
+      selectedUser: null,
+      selectedUserName: '',
+      posts: [],
+      todos: [] // Isi dengan data Todos yang telah Anda dapatkan
     };
   },
-  computed: {
-    filteredTodos() {
-      if (this.filter === 'completed') {
-        return this.todos.filter(todo => todo.completed);
-      } else if (this.filter === 'active') {
-        return this.todos.filter(todo => !todo.completed);
-      } else {
-        return this.todos; // Default: 'all'
-      }
-    },
-  },
   methods: {
-    addTodo() {
-      if (this.newTodo.trim() !== '') {
-        this.todos.push({ text: this.newTodo, completed: false });
-        this.newTodo = ''; // Reset input
-      }
+    fetchUsers() {
+      fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response => response.json())
+        .then(data => {
+          this.users = data;
+        })
+        .catch(error => {
+          console.error('Error fetching users:', error);
+        });
     },
-    confirmDelete(index) {
-      // Konfirmasi penghapusan tugas
-      const confirmation = confirm("Apakah Anda yakin ingin menghapus tugas ini?");
-      if (confirmation) {
-        this.deleteTodo(index);
-      }
-    },
-    deleteTodo(index) {
-      this.todos.splice(index, 1); // Hapus tugas
-    },
-    clearTodos() {
-      // Konfirmasi sebelum menghapus semua tugas
-      const confirmation = confirm("Apakah Anda yakin ingin menghapus semua tugas?");
-      if (confirmation) {
-        this.todos = []; // Hapus semua tugas
-      }
-    },
-    setFilter(filter) {
-      this.filter = filter; // Set filter
-    },
-    editTodo(todo) {
-      // Mengedit teks tugas dengan prompt
-      const newText = prompt("Edit tugas:", todo.text);
-      if (newText && newText.trim() !== "") {
-        todo.text = newText;
-      }
-    },
-  },
-  mounted() {
-    const storedTodos = localStorage.getItem('todos');
-    if (storedTodos) {
-      this.todos = JSON.parse(storedTodos);
+    fetchPosts() {
+      fetch(`https://jsonplaceholder.typicode.com/posts?userId=${this.selectedUser}`)
+        .then(response => response.json())
+        .then(data => {
+          this.posts = data;
+          // Get selected user name
+          const selectedUser = this.users.find(user => user.id === parseInt(this.selectedUser));
+          if (selectedUser) {
+            this.selectedUserName = selectedUser.name;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching posts:', error);
+        });
     }
   },
-  watch: {
-    todos: {
-      handler(newTodos) {
-        localStorage.setItem('todos', JSON.stringify(newTodos));
-      },
-      deep: true,
-    },
-  },
+  created() {
+    this.fetchUsers();
+  }
 };
 </script>
 
 <style scoped>
 .container {
-  max-width: 600px; /* Lebar maksimum kontainer */
-  margin: 20px auto; /* Pusatkan */
-  padding: 20px; /* Ruang antara isi */
-  background: linear-gradient(to right, #36d1dc, #5b86e5); /* Latar belakang gradien */
-  border-radius: 10px; /* Tepi yang membulat */
-  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
-}
-
-.app-title {
-  color: white; /* Warna judul */
-  text-align: center; /* Pusatkan teks */
-  margin-bottom: 20px; /* Ruang antara judul dan komponen lainnya */
-}
-
-.todo-input {
-  padding: 8px;
-  border-radius: 4px; /* Tepi yang membulat */
-  border: 1px solid #ddd; /* Batas input */
-}
-
-.todo-button {
-  padding: 8px 16px;
-  border-radius: 4px; /* Tepi membulat */
-  border: none;
-  background-color: #007bff; /* Warna biru */
-  color: white; /* Teks putih */
-  cursor: pointer;
-}
-
-.todo-button:hover {
-  background-color: #0056b3; /* Warna saat hover */
-}
-
-.todo-filter {
   display: flex;
-  justify-content: center; /* Jarak tombol filter */
-  margin: 10px 0; /* Spasi antara komponen */
-}
-
-.todo-filter button {
-  padding: 8px; /* Ukuran tombol */
-  background-color: transparent; /* Tidak ada latar belakang */
-  border: none; /* Tidak ada batas */
-  color: white; /* Teks putih */
-  cursor: pointer; /* Ubah kursor saat hover */
-}
-
-.todo-filter button.active {
-  text-decoration: underline; /* Tandai filter aktif */
-}
-
-.todo-list {
-  list-style: none; /* Hilangkan bullet */
-  padding: 0; /* Hilangkan padding */
-}
-
-.todo-item {
-  display: flex; /* Untuk menempatkan elemen saling bersebelahan */
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding: 10px; /* Spasi antara item */
-  border-bottom: 1px solid #ddd; /* Batas antar item */
+  height: 100vh;
 }
 
-.todo-item:last-child {
-  border-bottom: none; /* Hilangkan batas untuk item terakhir */
+.content {
+  max-width: 800px;
 }
 
-.todo-checkbox {
-  margin-right: 10px; /* Jarak antara checkbox dan teks */
+header {
+  background-color: #333;
+  padding: 10px 0;
 }
 
-.todo-text {
-  flex-grow: 1; /* Agar teks tumbuh mengisi ruang */
-  cursor: pointer; /* Ubah kursor saat hover */
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.todo-text.completed {
-  text-decoration: line-through; /* Coret teks jika selesai */
-  color: #888; /* Warna yang lebih lembut */
-}
-
-.todo-delete {
-  background-color: #ff4d4d; /* Warna merah untuk tombol hapus */
-  color: white; /* Teks putih */
-  border-radius: 4px; /* Tepi yang membulat */
-  padding: 8px;
+nav ul li {
+  display: inline-block;
+  margin-right: 20px;
+  color: #fff;
   cursor: pointer;
 }
 
-.todo-delete:hover {
-  background-color: #e94e4e; /* Warna saat hover */
+nav ul li.active {
+  font-weight: bold;
+}
+
+.menu-item {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #5a5a5a; /* Warna tombol netral */
+  transition: background-color 0.3s ease; /* Efek transisi saat hover */
+}
+
+.menu-item:hover {
+  background-color: #6e6e6e; /* Warna tombol sedikit lebih gelap saat hover */
+}
+
+.post-section,
+.todos-section {
+  margin-top: 20px;
+}
+
+.user-select {
+  margin-bottom: 10px;
+}
+
+.post-list {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.post-item {
+  margin-bottom: 20px;
+}
+
+.post-item h3 {
+  margin-bottom: 5px;
+}
+
+.post-item p {
+  margin-top: 5px;
 }
 </style>

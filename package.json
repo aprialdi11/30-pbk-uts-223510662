@@ -1,0 +1,11 @@
+{
+  "name": "cd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vue-cli-service serve"
+  },
+  "author": "",
+  "license": "ISC"
+}
