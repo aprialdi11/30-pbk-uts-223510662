@@ -51,7 +51,16 @@
       <button class="todo-clear" @click="clearTodos">Clear All</button>
     </div>
   </template>
-  
+  <script>
+  export default {
+    props: {
+      todos: {
+        type: Array,
+        required: true
+      }
+    }
+  };
+  </script>
   <script>
   export default {
     data() {
