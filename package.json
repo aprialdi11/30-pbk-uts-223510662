@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "uts-pbk",
   "private": true,
   "version": "0.0.0",
@@ -20,4 +21,15 @@
     "@vitejs/plugin-vue": "^5.0.5",
     "vite": "^5.2.0"
   }
+=======
+  "name": "cd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vue-cli-service serve"
+  },
+  "author": "",
+  "license": "ISC"
+>>>>>>> 679cd71d8e9d4d7c0ef72ed02dca8a83ca5fecef
 }
