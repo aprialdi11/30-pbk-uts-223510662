@@ -1,157 +1,135 @@
 <template>
   <div class="container">
+    <!-- Header dengan navigasi -->
     <header>
       <nav>
         <ul>
-          <li @click="selectedMenu = 'Post'" :class="{ active: selectedMenu === 'Post' }" class="menu-item">Post</li>
-          <li @click="selectedMenu = 'Todos'" :class="{ active: selectedMenu === 'Todos' }" class="menu-item">Todos</li>
+          <li>
+            <!-- Menggunakan RouterLink untuk navigasi -->
+            <router-link to="/posts" class="nav-link">Posts</router-link>
+          </li>
+          <li>
+            <router-link to="/todos" class="nav-link">Todos</router-link>
+          </li>
+          <li>
+            <router-link to="/albums" class="nav-link">Albums</router-link>
+          </li>
         </ul>
       </nav>
     </header>
+    <!-- Konten dinamis yang akan ditampilkan oleh Vue Router -->
     <div class="content">
-      <div v-if="selectedMenu === 'Post'" class="post-section">
-        <select v-model="selectedUser" @change="fetchPosts" class="user-select">
-          <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-        </select>
-        <div v-if="posts.length > 0" class="post-list">
-          <h2>Postingan User: {{ selectedUserName }}</h2>
-          <ul>
-            <li v-for="post in posts" :key="post.id" class="post-item">
-              <h3>{{ post.title }}</h3>
-              <p>{{ post.body }}</p>
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          <p>Loading...</p>
-        </div>
-      </div>
-      <div v-else-if="selectedMenu === 'Todos'" class="todos-section">
-        <Todos :todos="todos" />
-      </div>
+      <router-view />
     </div>
   </div>
 </template>
-<script>
-import Todos from './Todos.vue'; // Sesuaikan dengan path file komponen Todos Anda
 
+<script>
+// Export default untuk komponen App
 export default {
-  components: {
-    Todos
-  },
-  data() {
-    return {
-      selectedMenu: 'Post', // Default menu selection
-      users: [],
-      selectedUser: null,
-      selectedUserName: '',
-      posts: [],
-      todos: [] // Isi dengan data Todos yang telah Anda dapatkan
-    };
-  },
-  methods: {
-    fetchUsers() {
-      fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json())
-        .then(data => {
-          this.users = data;
-        })
-        .catch(error => {
-          console.error('Error fetching users:', error);
-        });
-    },
-    fetchPosts() {
-      fetch(`https://jsonplaceholder.typicode.com/posts?userId=${this.selectedUser}`)
-        .then(response => response.json())
-        .then(data => {
-          this.posts = data;
-          // Get selected user name
-          const selectedUser = this.users.find(user => user.id === parseInt(this.selectedUser));
-          if (selectedUser) {
-            this.selectedUserName = selectedUser.name;
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching posts:', error);
-        });
-    }
-  },
-  created() {
-    this.fetchUsers();
-  }
+  name: 'App',
 };
 </script>
 
-<style scoped>
+<style>
+/* Gaya CSS untuk container utama */
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #87ceeb, #ffffff); /* Gradient dari biru langit ke putih */
+  background-size: cover; /* Mengatur ukuran latar belakang agar menutupi seluruh area */
+  background-repeat: no-repeat; /* Menghindari pengulangan latar belakang */
 }
 
-.content {
-  max-width: 800px;
-}
 
+
+
+
+
+/* Gaya CSS untuk bagian header */
 header {
-  background-color: #333;
-  padding: 10px 0;
+  background: linear-gradient(to right, #3A82EE, #3F51B5); /* Gradient horizontal dari kiri ke kanan */
+  padding: 15px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Gaya CSS untuk daftar navigasi */
 nav ul {
   list-style: none;
+  display: flex;
+  justify-content: center;
   padding: 0;
   margin: 0;
 }
 
+/* Gaya CSS untuk setiap item dalam daftar navigasi */
 nav ul li {
-  display: inline-block;
-  margin-right: 20px;
+  margin: 0 15px;
+}
+
+/* Gaya CSS untuk RouterLink */
+.nav-link {
   color: #fff;
-  cursor: pointer;
-}
-
-nav ul li.active {
-  font-weight: bold;
-}
-
-.menu-item {
-  padding: 8px 12px;
-  border-radius: 4px;
-  background-color: #5a5a5a; /* Warna tombol netral */
-  transition: background-color 0.3s ease; /* Efek transisi saat hover */
-}
-
-.menu-item:hover {
-  background-color: #6e6e6e; /* Warna tombol sedikit lebih gelap saat hover */
-}
-
-.post-section,
-.todos-section {
-  margin-top: 20px;
-}
-
-.user-select {
-  margin-bottom: 10px;
-}
-
-.post-list {
-  background-color: #f4f4f4;
-  padding: 10px;
+  text-decoration: none;
+  padding: 10px 20px;
   border-radius: 8px;
+  transition: background-color 0.3s;
 }
 
-.post-item {
+/* Gaya CSS saat hover pada RouterLink */
+.nav-link:hover {
+  background-color: #6c5ce7;
+}
+
+/* Gaya CSS untuk konten utama */
+.content {
+  width: 100%;
+  max-width: 800px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-.post-item h3 {
-  margin-bottom: 5px;
+/* Gaya CSS untuk judul utama */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-.post-item p {
-  margin-top: 5px;
+/* Gaya CSS untuk daftar foto */
+.photo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 0;
+  list-style: none;
+}
+
+/* Gaya CSS untuk setiap item foto */
+.photo-item {
+  cursor: pointer;
+}
+
+/* Gaya CSS untuk foto */
+.photo-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Gaya CSS saat hover pada foto */
+.photo-item img:hover {
+  transform: scale(1.05);
 }
 </style>

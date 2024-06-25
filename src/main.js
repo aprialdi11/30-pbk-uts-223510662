@@ -1,5 +1,12 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { Quasar } from 'quasar'; // Pastikan ini adalah cara impor yang benar sesuai dengan konfigurasi Quasar Anda
+import 'quasar/dist/quasar.css';
+import './main.css';
 
-createApp(App).mount('#app')
+const app = createApp(App);
+app.use(router);
+app.use(Quasar); // Pastikan Anda menggunakan Quasar dengan cara yang sesuai
+
+app.mount('#app');
